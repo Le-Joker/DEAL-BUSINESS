@@ -1,143 +1,89 @@
-// option de connexion et d'inscription
+// === Constantes clés de stockage ===
+const USERS_KEY = "deal_business_users";
+const CURRENT_USER_KEY = "deal_current_user";
 
+// === Sélecteurs DOM ===
 const signInForm = document.querySelector("#signInModal form");
 const signUpForm = document.querySelector("#signUpModal form");
-const USERS_KEY = "deal_business_users";
+const signInBtn = document.querySelector('[data-bs-target="#signInModal"]');
+const signUpBtn = document.querySelector('[data-bs-target="#signUpModal"]');
+const exploreBtn = document.querySelector('a.btn[href="#"]');
 
-// Charger les utilisateurs
+// === Fonctions utilitaires de stockage ===
 function loadUsers() {
-  const usersJSON = localStorage.getItem(USERS_KEY);
-  return usersJSON ? JSON.parse(usersJSON) : {};
+  return JSON.parse(localStorage.getItem(USERS_KEY)) || {};
 }
-
-// Sauvegarder
 function saveUsers(users) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
-
-// Stocker utilisateur connecté
 function setCurrentUser(email) {
-  localStorage.setItem("currentUser", email);
+  localStorage.setItem(CURRENT_USER_KEY, email);
 }
-
-// Récupérer utilisateur connecté
 function getCurrentUser() {
-  return localStorage.getItem("currentUser");
+  return localStorage.getItem(CURRENT_USER_KEY);
 }
 
-// Déconnexion
-function logoutUser() {
-  localStorage.removeItem("currentUser");
-  window.location.reload();
-}
+// === Gérer affichage selon état de connexion ===
+function updateUIOnAuth() {
+  const email = getCurrentUser();
+  if (email) {
+    signInBtn?.classList.add("d-none");
+    signUpBtn?.classList.add("d-none");
 
-// Mise à jour interface
-function updateInterface() {
-  const userEmail = getCurrentUser();
-  const authButtons = document.getElementById("authButtons");
-  const userSpace = document.getElementById("userSpace");
-  const userInitial = document.getElementById("userInitial");
-
-  if (userEmail) {
-    authButtons.classList.add("d-none");
-    userSpace.classList.remove("d-none");
-    userInitial.textContent = userEmail.charAt(0).toUpperCase();
-  } else {
-    authButtons.classList.remove("d-none");
-    userSpace.classList.add("d-none");
+    exploreBtn.textContent = "Accéder à la boutique";
+    exploreBtn.removeAttribute("data-bs-toggle");
+    exploreBtn.removeAttribute("data-bs-target");
+    exploreBtn.setAttribute("href", "boutique.html");
   }
 }
 
-// Inscription
-signUpForm.addEventListener("submit", (e) => {
+// === Inscription ===
+signUpForm?.addEventListener("submit", (e) => {
   e.preventDefault();
   const email = signUpForm.signupEmail.value.trim().toLowerCase();
   const password = signUpForm.signupPassword.value.trim();
+  const color = signUpForm.userColor?.value || "#0d6efd"; // fallback par défaut
 
-  if (!email || !password) {
+  if (!email || !password || !color) {
     alert("Remplis tous les champs !");
     return;
   }
 
-  let users = loadUsers();
+  const users = loadUsers();
   if (users[email]) {
-    alert("Utilisateur déjà existant, connecte-toi !");
+    alert("Utilisateur déjà existant.");
     return;
   }
 
-  users[email] = { password };
+  users[email] = { password, color };
   saveUsers(users);
+  setCurrentUser(email);
 
-  alert("Inscription réussie ! Tu peux maintenant te connecter.");
+  alert("Inscription réussie !");
   signUpForm.reset();
 
-  const signUpModal = bootstrap.Modal.getInstance(
-    document.getElementById("signUpModal")
-  );
-  signUpModal.hide();
-  const signInModal = new bootstrap.Modal(
-    document.getElementById("signInModal")
-  );
-  signInModal.show();
+  bootstrap.Modal.getInstance(document.getElementById("signUpModal"))?.hide();
+  new bootstrap.Modal(document.getElementById("signInModal")).show();
 });
 
-// Connexion
-signInForm.addEventListener("submit", (e) => {
+// === Connexion ===
+signInForm?.addEventListener("submit", (e) => {
   e.preventDefault();
   const email = signInForm.loginEmail.value.trim().toLowerCase();
   const password = signInForm.loginPassword.value.trim();
 
-  if (!email || !password) {
-    alert("Remplis tous les champs !");
-    return;
-  }
-
-  let users = loadUsers();
-  if (!users[email]) {
-    alert("Utilisateur non trouvé, inscris-toi !");
-    return;
-  }
-
-  if (users[email].password !== password) {
-    alert("Mot de passe incorrect !");
-    return;
-  }
+  const users = loadUsers();
+  if (!users[email]) return alert("Utilisateur non trouvé !");
+  if (users[email].password !== password)
+    return alert("Mot de passe incorrect !");
 
   setCurrentUser(email);
-  alert(`Bienvenue ${email} ! Tu es connecté.`);
+  alert("Connexion réussie !");
   signInForm.reset();
 
-  const signInModal = bootstrap.Modal.getInstance(
-    document.getElementById("signInModal")
-  );
-  signInModal.hide();
-
-  // Rediriger vers la boutique
+  bootstrap.Modal.getInstance(document.getElementById("signInModal"))?.hide();
   window.location.href = "boutique.html";
 });
 
-// Bouton "Explorer la boutique"
-const exploreBtn = document.getElementById("exploreBtn");
-if (exploreBtn) {
-  exploreBtn.addEventListener("click", (e) => {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      e.preventDefault();
-      const signInModal = new bootstrap.Modal(
-        document.getElementById("signInModal")
-      );
-      signInModal.show();
-    } else {
-      window.location.href = "boutique.html";
-    }
-  });
-}
-
-// Déconnexion
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", logoutUser);
-}
-
-// Initialisation
-document.addEventListener("DOMContentLoaded", updateInterface);
+// === Initialisation au chargement ===
+document.addEventListener("DOMContentLoaded", updateUIOnAuth);

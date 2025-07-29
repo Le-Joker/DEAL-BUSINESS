@@ -82,7 +82,7 @@ signInForm?.addEventListener("submit", (e) => {
   signInForm.reset();
 
   bootstrap.Modal.getInstance(document.getElementById("signInModal"))?.hide();
-  window.location.href = "boutique.html";
+  window.location.href = "./boutique.html";
 });
 
 // === Initialisation au chargement ===

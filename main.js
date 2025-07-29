@@ -45,6 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("userPhoto").style.background =
       user.color || "#ccc";
   } else {
-    window.location.href = "index.html"; // Redirection si pas connecté
+    window.location.href = "./index.html"; // Redirection si pas connecté
   }
 });

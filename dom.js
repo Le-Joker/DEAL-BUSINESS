@@ -184,7 +184,7 @@ function showAlert(message) {
   if (!alertBox) return;
   alertBox.innerHTML = `
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      ${message}
+      Veuillez vous inscrire avant pour continuer.
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
     </div>
   `;

@@ -1,89 +1,177 @@
-// === Constantes clés de stockage ===
-const USERS_KEY = "deal_business_users";
-const CURRENT_USER_KEY = "deal_current_user";
+//Canvas Particle Animation
+const canvas = document.getElementById("background-canvas");
+const ctx = canvas.getContext("2d");
+let w, h;
+let particles = [];
 
-// === Sélecteurs DOM ===
-const signInForm = document.querySelector("#signInModal form");
-const signUpForm = document.querySelector("#signUpModal form");
-const signInBtn = document.querySelector('[data-bs-target="#signInModal"]');
-const signUpBtn = document.querySelector('[data-bs-target="#signUpModal"]');
-const exploreBtn = document.querySelector('a.btn[href="#"]');
-
-// === Fonctions utilitaires de stockage ===
-function loadUsers() {
-  return JSON.parse(localStorage.getItem(USERS_KEY)) || {};
-}
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-function setCurrentUser(email) {
-  localStorage.setItem(CURRENT_USER_KEY, email);
-}
-function getCurrentUser() {
-  return localStorage.getItem(CURRENT_USER_KEY);
+function resize() {
+  w = window.innerWidth;
+  h = window.innerHeight;
+  canvas.width = w;
+  canvas.height = h;
 }
 
-// === Gérer affichage selon état de connexion ===
-function updateUIOnAuth() {
-  const email = getCurrentUser();
-  if (email) {
-    signInBtn?.classList.add("d-none");
-    signUpBtn?.classList.add("d-none");
+class Particle {
+  constructor() {
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.radius = 1 + Math.random() * 2;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.alpha = 0.3 + Math.random() * 0.5;
+  }
 
-    exploreBtn.textContent = "Accéder à la boutique";
-    exploreBtn.removeAttribute("data-bs-toggle");
-    exploreBtn.removeAttribute("data-bs-target");
-    exploreBtn.setAttribute("href", "boutique.html");
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+    ctx.fillStyle = `rgba(158, 234, 249, ${this.alpha})`;
+    ctx.fill();
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x < 0 || this.x > w) this.vx *= -1;
+    if (this.y < 0 || this.y > h) this.vy *= -1;
   }
 }
 
-// === Inscription ===
-signUpForm?.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = signUpForm.signupEmail.value.trim().toLowerCase();
-  const password = signUpForm.signupPassword.value.trim();
-  const color = signUpForm.userColor?.value || "#0d6efd"; // fallback par défaut
+function initParticles(count = 100) {
+  particles = [];
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle());
+  }
+}
 
-  if (!email || !password || !color) {
-    alert("Remplis tous les champs !");
+function animate() {
+  ctx.clearRect(0, 0, w, h);
+  particles.forEach((p) => {
+    p.update();
+    p.draw();
+  });
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener("resize", () => {
+  resize();
+  initParticles(100);
+});
+
+resize();
+initParticles(100);
+animate();
+
+//Live typing
+const text = "Bienvenue sur D€@L BUSINESS Online Market";
+const textElement = document.getElementById("text");
+
+// Injecter chaque lettre avec span
+text.split("").forEach((letter, i) => {
+  const span = document.createElement("span");
+  span.textContent = letter === " " ? "\u00A0" : letter;
+  span.classList.add("letter");
+  span.style.animationDelay = `${i * 50}ms`; // délai progressif
+  textElement.appendChild(span);
+});
+
+// Fade in du slogan après toute l'animation
+const slogan = document.getElementById("slogan");
+const totalDuration = text.length * 50 + 500;
+setTimeout(() => {
+  slogan.style.opacity = 1;
+}, totalDuration);
+
+// Comportement du formulaire de connexion/inscription
+// Base d'utilisateurs simulée
+const USERS_KEY = "users";
+const SESSION_KEY = "currentUser";
+
+const authForm = document.getElementById("authForm");
+const authSubmit = document.getElementById("authSubmit");
+const openAuth = document.getElementById("openAuth");
+const authOverlay = document.getElementById("authOverlay");
+const colorPicker = document.getElementById("colorPicker");
+const switchToSignup = document.getElementById("switchToSignup");
+const authTitle = document.getElementById("authTitle");
+const toggleMode = document.getElementById("toggleAuthMode");
+
+let isSignup = false;
+
+// 👁️ Ouvrir le formulaire
+openAuth?.addEventListener("click", () => {
+  authOverlay.classList.remove("d-none");
+});
+
+// 🔄 Basculer entre inscription et connexion
+switchToSignup.addEventListener("click", (e) => {
+  e.preventDefault();
+  toggleAuthMode();
+});
+
+toggleMode.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (e.target.tagName === "A") {
+    toggleAuthMode();
+  }
+});
+
+function toggleAuthMode() {
+  isSignup = !isSignup;
+  if (isSignup) {
+    authTitle.textContent = "Inscription";
+    authSubmit.textContent = "S'inscrire";
+    colorPicker.classList.remove("d-none");
+    toggleMode.innerHTML = `Vous avez déjà un compte ? <a href="#">Se connecter</a>`;
+    switchToSignup.textContent = "Se connecter";
+  } else {
+    authTitle.textContent = "Connexion";
+    authSubmit.textContent = "Connexion";
+    colorPicker.classList.add("d-none");
+    toggleMode.innerHTML = `Vous n'avez pas encore de compte ? <a href="#">S'inscrire</a>`;
+    switchToSignup.textContent = "S'inscrire";
+  }
+}
+
+// ❌ Fermer l'overlay si on clique en dehors du formulaire
+authOverlay.addEventListener("click", (e) => {
+  if (e.target === authOverlay) {
+    authOverlay.classList.add("d-none");
+  }
+});
+
+// ✅ Soumission du formulaire
+authForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = authForm.email.value.trim();
+  const password = authForm.password.value.trim();
+  const color = authForm.color?.value || "#9eeaf9";
+
+  if (!email || !password) {
+    alert("Veuillez remplir tous les champs.");
     return;
   }
 
-  const users = loadUsers();
-  if (users[email]) {
-    alert("Utilisateur déjà existant.");
-    return;
+  let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+
+  if (isSignup) {
+    if (users.find((u) => u.email === email)) {
+      alert("Cet email est déjà utilisé.");
+      return;
+    }
+    users.push({ email, password, color });
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    localStorage.setItem(SESSION_KEY, email);
+    window.location.href = "boutique.html";
+  } else {
+    const user = users.find(
+      (u) => u.email === email && u.password === password
+    );
+    if (!user) {
+      alert("Identifiants incorrects.");
+      return;
+    }
+    localStorage.setItem(SESSION_KEY, user.email);
+    window.location.href = "boutique.html";
   }
-
-  users[email] = { password, color };
-  saveUsers(users);
-  setCurrentUser(email);
-
-  alert("Inscription réussie !");
-  signUpForm.reset();
-
-  bootstrap.Modal.getInstance(document.getElementById("signUpModal"))?.hide();
-  new bootstrap.Modal(document.getElementById("signInModal")).show();
 });
-
-// === Connexion ===
-signInForm?.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = signInForm.loginEmail.value.trim().toLowerCase();
-  const password = signInForm.loginPassword.value.trim();
-
-  const users = loadUsers();
-  if (!users[email]) return alert("Utilisateur non trouvé !");
-  if (users[email].password !== password)
-    return alert("Mot de passe incorrect !");
-
-  setCurrentUser(email);
-  alert("Connexion réussie !");
-  signInForm.reset();
-
-  bootstrap.Modal.getInstance(document.getElementById("signInModal"))?.hide();
-  window.location.href = "./boutique.html";
-});
-
-// === Initialisation au chargement ===
-document.addEventListener("DOMContentLoaded", updateUIOnAuth);

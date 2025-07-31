@@ -1,196 +1,285 @@
 <!DOCTYPE html>
-<html lang="fr" data-bs-theme="auto">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BoutiqueZen</title>
+    <title>Boutique - D€@l_Business</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     />
     <link
+      rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
       rel="stylesheet"
     />
     <style>
       body {
-        min-height: 100vh;
-        display: flex;
+        font-family: "Space Grotesk", sans-serif;
+        background: #f4f4f8;
+        color: #222;
+        margin: 0;
+        padding: 0;
       }
+
+      .offcanvas-header {
+        border-bottom: 1px solid #ccc;
+      }
+
       .sidebar {
-        width: 260px;
-        background: var(--bs-body-bg);
-        border-right: 1px solid var(--bs-border-color);
-        flex-shrink: 0;
-        transition: left 0.3s;
+        background-color: #0a0f24;
+        color: white;
+        height: 100vh;
+        padding: 1rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        overflow-y: auto;
+        display: none;
       }
-      .sidebar .nav-link {
-        color: var(--bs-body-color);
-        padding: 0.75rem 1.25rem;
+
+      .sidebar h4 {
+        color: #00d2ff;
+        margin-bottom: 1rem;
       }
-      .sidebar .nav-link.active {
-        background: var(--bs-primary-bg-subtle);
-        font-weight: 600;
+
+      .sidebar a {
+        display: block;
+        color: #ccc;
+        margin: 0.5rem 0;
+        text-decoration: none;
       }
-      @media (max-width: 768px) {
-        .sidebar {
-          position: fixed;
-          top: 0;
-          left: -260px;
-          height: 100%;
-          z-index: 1050;
-        }
-        .sidebar.show {
-          left: 0;
-        }
+
+      .sidebar a:hover {
+        color: #fff;
       }
-      .content {
-        flex-grow: 1;
-        padding: 1.5rem;
-        background: var(--bs-body-bg);
-        color: var(--bs-body-color);
+
+      .main-content {
+        margin-left: 240px;
+        padding: 2rem;
       }
-      .user-header {
+
+      .user-info {
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
         display: flex;
         align-items: center;
         gap: 1rem;
       }
-      .user-photo {
-        width: 40px;
-        height: 40px;
+
+      .user-info img {
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
-        background: gray;
-        cursor: pointer;
+        object-fit: cover;
       }
-      .content nav button {
-        border: none;
-        background: transparent;
-        color: var(--bs-body-color);
+
+      .carousel-inner img {
+        height: 300px;
+        object-fit: cover;
+      }
+
+      .product-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .product-img {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+      }
+
+      .product-body {
+        padding: 1rem;
+      }
+
+      .product-title {
+        font-weight: bold;
+      }
+
+      .price {
+        color: #3a7bd5;
+        font-size: 1.2rem;
+      }
+
+      footer {
+        background-color: #121c3a;
+        color: #fff;
+        padding: 2rem 0;
+        margin-left: 240px;
+      }
+
+      @media (max-width: 991px) {
+        .main-content {
+          margin-left: 0;
+        }
+        footer {
+          margin-left: 0;
+        }
+        .sidebar {
+          display: none !important;
+        }
       }
     </style>
   </head>
   <body>
-    <!-- Sidebar -->
-    <aside class="sidebar p-3" id="sidebar">
-      <h3 class="text-center mb-4">Mon Espace</h3>
-      <nav class="nav nav-pills flex-column">
-        <a href="#" class="nav-link active"
-          ><i class="bi bi-house me-2"></i>Accueil</a
+    <!-- Navbar/Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+      <div class="container-fluid">
+        <button
+          class="btn btn-outline-light me-2 d-lg-none"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasSidebar"
         >
-        <a href="#" class="nav-link"
-          ><i class="bi bi-box-seam me-2"></i>Produits</a
-        >
-        <a href="#" class="nav-link"
-          ><i class="bi bi-tags me-2"></i>Promotions</a
-        >
-        <a href="#" class="nav-link"><i class="bi bi-cart me-2"></i>Panier</a>
-        <a href="#" class="nav-link"><i class="bi bi-person me-2"></i>Compte</a>
-      </nav>
-      <button
-        class="btn btn-outline-secondary w-100 mt-4 d-md-none"
-        onclick="toggleSidebar()"
-      >
-        Fermer le menu
-      </button>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="content">
-      <nav class="d-flex justify-content-between align-items-center mb-4">
-        <button class="btn btn-link d-md-none" onclick="toggleSidebar()">
-          <i class="bi bi-list fs-2"></i>
+          <i class="bi bi-list"></i>
         </button>
-        <div class="user-header">
-          <div
-            id="userPhoto"
-            class="user-photo"
-            onclick="openUserModal()"
-          ></div>
-          <span id="userEmail">user@example.com</span>
-        </div>
-        <div class="btn-group">
-          <button
-            class="btn btn-secondary dropdown-toggle"
-            data-bs-toggle="dropdown"
-          >
-            🌓 Thème
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-              <a class="dropdown-item theme-option" data-theme="light"
-                >🌞 Clair</a
-              >
-            </li>
-            <li>
-              <a class="dropdown-item theme-option" data-theme="dark"
-                >🌙 Sombre</a
-              >
-            </li>
-            <li>
-              <a class="dropdown-item theme-option" data-theme="auto"
-                >🖥️ Système</a
-              >
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <h1 class="mb-4">Nos produits</h1>
-      <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col">
-          <div class="card h-100 shadow-sm">
-            <img
-              src="https://via.placeholder.com/300"
-              class="card-img-top"
-              alt="Produit"
-            />
-            <div class="card-body">
-              <h5 class="card-title">Produit A</h5>
-              <p class="card-text">Description claire du produit.</p>
-              <button class="btn btn-primary w-100">Ajouter au panier</button>
-            </div>
+        <a class="navbar-brand" href="#">D€@L_BUSINΞSS</a>
+        <div class="ms-auto d-none d-lg-flex align-items-center">
+          <img
+            src="https://via.placeholder.com/60"
+            class="rounded-circle me-2"
+            alt="avatar"
+          />
+          <div class="text-white">
+            <div>Bienvenue, Utilisateur</div>
+            <small>utilisateur@email.com</small>
           </div>
         </div>
       </div>
-    </main>
+    </nav>
 
-    <!-- Modal utilisateur -->
-    <div class="modal fade" id="userModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-slideout">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Mes informations</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p><strong>Email :</strong> <span id="modalEmail"></span></p>
-            <p>
-              <strong>Couleur préférée :</strong> <span id="modalColor"></span>
-            </p>
-            <hr />
-            <button
-              class="btn btn-outline-secondary w-100 mb-2"
-              onclick="logout()"
+    <!-- Offcanvas Sidebar pour petit écran -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="mb-3 d-flex align-items-center">
+          <img
+            src="https://via.placeholder.com/60"
+            class="rounded-circle me-2"
+            alt="avatar"
+          />
+          <div>
+            <strong>Utilisateur</strong><br /><small
+              >utilisateur@email.com</small
             >
-              🔓 Déconnexion
-            </button>
-            <button
-              class="btn btn-outline-danger w-100"
-              onclick="deleteAccount()"
-            >
-              🗑️ Supprimer mon compte
-            </button>
           </div>
         </div>
+        <a href="#" class="d-block mb-2">Dashboard</a>
+        <a href="#" class="d-block mb-2">Annonces</a>
+        <a href="#" class="d-block mb-2">Boutique</a>
+        <a href="#" class="d-block mb-2">Messages</a>
+        <a href="#" class="d-block mb-2">Paramètres</a>
       </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Sidebar Desktop -->
+    <aside class="sidebar d-none d-lg-block">
+      <h4>D€@L_USER</h4>
+      <a href="#">Dashboard</a>
+      <a href="#">Annonces</a>
+      <a href="#">Boutique</a>
+      <a href="#">Messages</a>
+      <a href="#">Paramètres</a>
+    </aside>
+
+    <!-- Contenu Principal -->
+    <div class="main-content">
+      <!-- Carrousel -->
+      <div
+        id="carouselExampleIndicators"
+        class="carousel slide mb-5"
+        data-bs-ride="carousel"
+      >
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img
+              src="Deal-Business.png"
+              class="d-block w-100"
+              alt="..."
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="Deal_Business.png"
+              class="d-block w-100"
+              alt="..."
+            />
+          </div>
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselExampleIndicators"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselExampleIndicators"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+
+      <!-- Produits -->
+      <section>
+        <h2 class="mb-4 fw-bold">Nos Produits</h2>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="product-card">
+              <img
+                src="https://via.placeholder.com/400x200"
+                alt="Produit 1"
+                class="product-img"
+              />
+              <div class="product-body">
+                <h5 class="product-title">Nom du produit</h5>
+                <p class="price">29,99 €</p>
+                <button class="btn btn-primary w-100">Ajouter au panier</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center">
+      <div class="container">
+        <p>&copy; 2025 D€@L_BUSINΞSS. Tous droits réservés.</p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-whatsapp"></i></a>
+        </div>
+      </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="main.js" defer></script>
   </body>
 </html>

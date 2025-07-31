@@ -83,51 +83,58 @@ setTimeout(() => {
 }, totalDuration);
 
 // Comportement du formulaire de connexion/inscription
-// Base d'utilisateurs simulée
-const USERS_KEY = "users";
-const SESSION_KEY = "currentUser";
-
 const authForm = document.getElementById("authForm");
 const authSubmit = document.getElementById("authSubmit");
 const openAuth = document.getElementById("openAuth");
 const authOverlay = document.getElementById("authOverlay");
+const authP = document.querySelector(".authP");
 const colorPicker = document.getElementById("colorPicker");
 const switchToSignup = document.getElementById("switchToSignup");
 const authTitle = document.getElementById("authTitle");
+const authName = document.getElementById("authName");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
 const toggleMode = document.getElementById("toggleAuthMode");
-const alertBox = document.getElementById("authAlert");
+const divName = document.getElementById("Name");
+const numberInput = document.getElementById("Number");
 
 let isSignup = false;
 
-// 🔁 Alterner connexion / inscription
+// Alterner entre Connexion / Inscription
 function toggleAuthMode() {
   isSignup = !isSignup;
-  authTitle.textContent = isSignup ? "Inscription" : "Connexion";
+  authTitle.textContent = isSignup ? "Creer un nouveau compte" : "Connectez-vous à votre compte";
+  authP.textContent = isSignup ? "Entrez vos informations pour créer un compte." : "Entrez vos identifiants pour accéder à votre tableau de bord.";
   authSubmit.textContent = isSignup ? "S'inscrire" : "Connexion";
   colorPicker.classList.toggle("d-none", !isSignup);
   toggleMode.innerHTML = isSignup
-    ? `Vous avez déjà un compte ? <a href="#">Se connecter</a>`
-    : `Vous n'avez pas encore de compte ? <a href="#">S'inscrire</a>`;
+    ? `Vous avez déjà un compte ? <a href="#" id="in">Se connecter</a>`
+    : `Vous n'avez pas encore de compte ? <a href="#" id="up">S'inscrire</a>`;
   switchToSignup.textContent = isSignup ? "Se connecter" : "S'inscrire";
+  divName.classList.toggle("d-none", !isSignup);
+  numberInput.classList.toggle("d-none", !isSignup);
+  authPassword.style.width = !isSignup ? "460px" : "100%";
+  authPassword.style.transition = "none";
   clearAlert();
 }
 
-// 👁️ Ouvrir le formulaire
+// Ouvrir le formulaire
 openAuth?.addEventListener("click", () => {
   authOverlay.classList.remove("d-none");
 });
 
-// 🔁 Liens de bascule
+// Bascule inscription/connexion
 switchToSignup.addEventListener("click", (e) => {
   e.preventDefault();
   toggleAuthMode();
 });
+
 toggleMode.addEventListener("click", (e) => {
   e.preventDefault();
   if (e.target.tagName === "A") toggleAuthMode();
 });
 
-// ❌ Fermer formulaire
+// ❌ Fermer formulaire si clic en dehors
 authOverlay.addEventListener("click", (e) => {
   if (e.target === authOverlay) {
     authOverlay.classList.add("d-none");
@@ -135,61 +142,7 @@ authOverlay.addEventListener("click", (e) => {
   }
 });
 
-// ✅ Validation formulaire
+// ✅ Validation du formulaire
 authForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const email = authForm.email.value.trim();
-  const password = authForm.password.value.trim();
-  const color = authForm.color?.value || "#9eeaf9";
-
-  if (!email || !password) {
-    showAlert("Veuillez remplir tous les champs.");
-    return;
-  }
-
-  let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-
-  if (isSignup) {
-    if (users.find((u) => u.email === email)) {
-      showAlert("📧 Cet email est déjà utilisé.");
-      return;
-    }
-
-    users.push({ email, password, color });
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    localStorage.setItem(SESSION_KEY, email);
-    window.location.href = "boutique.html";
-  } else {
-    const user = users.find((u) => u.email === email);
-
-    if (!user) {
-      showAlert(
-        "👤 Aucun compte trouvé avec cet email. Veuillez vous inscrire."
-      );
-      return;
-    }
-
-    if (user.password !== password) {
-      showAlert("❌ Mot de passe incorrect.");
-      return;
-    }
-
-    localStorage.setItem(SESSION_KEY, user.email);
-    window.location.href = "boutique.html";
-  }
 });
-
-// 🔔 Alertes Bootstrap
-function showAlert(message) {
-  if (!alertBox) return;
-  alertBox.innerHTML = `
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      Veuillez vous inscrire avant pour continuer.
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-    </div>
-  `;
-}
-
-function clearAlert() {
-  if (alertBox) alertBox.innerHTML = "";
-}

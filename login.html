@@ -13,8 +13,10 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -41,7 +43,7 @@
         background: linear-gradient(-45deg, #0a0f24, #121c3a, #2b355d);
         background-size: 400% 400%;
         animation: gradientShift 12s ease infinite;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Space Grotesk", sans-serif;
         color: white;
         scrollbar-width: none;
         -ms-overflow-style: none;
@@ -123,7 +125,7 @@
         width: 100vw;
         height: 100vh;
         background-color: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(6px);
+        backdrop-filter: blur(10px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -138,7 +140,7 @@
         border-radius: 20px;
         padding: 2rem;
         width: 100%;
-        max-width: 420px;
+        max-width: 520px;
         color: #222;
         position: relative;
         box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
@@ -172,6 +174,47 @@
 
       .auth-card button {
         border-radius: 12px;
+      }
+
+      .authP {
+        font-size: 1rem;
+        text-align: center;
+      }
+
+      .auth-card a {
+        text-decoration: none;
+      }
+
+      .auth-card #up::after {
+        content: "";
+        display: block;
+        width: 0;
+        position: relative;
+        left: 335px;
+        height: 2px;
+        margin-top: -0.2rem;
+        background: var(--auth-color-2);
+        transition: width 0.3s ease;
+      }
+
+      .auth-card #up:hover::after {
+        width: 16%;
+      }
+
+      .auth-card #in::after {
+        content: "";
+        display: block;
+        width: 0;
+        position: relative;
+        left: 288px;
+        height: 2px;
+        margin-top: -0.2rem;
+        background: var(--auth-color-2);
+        transition: width 0.3s ease;
+      }
+
+      .auth-card #in:hover::after {
+        width: 22%;
       }
 
       /* Bouton stylé */
@@ -285,6 +328,36 @@
           transform: translateY(0);
         }
       }
+
+      .colorPicker {
+        width: 100%;
+      }
+
+      .color {
+        width: 50%;
+      }
+
+      .sexe {
+        width: 50%;
+        background: transparent;
+      }
+      .custom-select {
+        padding: 10px;
+        border-radius: 12px;
+        border: 2px solid #666;
+        background-color: transparent;
+        color: #333;
+        font-size: 16px;
+        outline: none;
+        transition: all 0.3s ease;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+      }
+      .custom-select:focus {
+        box-shadow: 0 0 5px var(--auth-color-1);
+        background-color: #fff;
+      }
     </style>
   </head>
   <body>
@@ -338,16 +411,20 @@
     <!-- Auth Overlay -->
     <div id="authOverlay" class="auth-overlay d-none">
       <div class="auth-card">
-        <div id="authAlert" class="mt-2"></div>
-        <h4 class="mb-4 text-center" id="authTitle">Connexion</h4>
+        <h4 class="mb-2 text-center" id="authTitle">
+          Connectez-vous à votre compte
+        </h4>
+        <p class="lead authP">
+          Entrez vos identifiants pour acceder a votre tableau de bord.
+        </p>
         <form id="authForm">
-          <div class="mb-3">
-            <label for="authName" class="form-label">Name</label>
+          <div class="mb-3" id="Name">
+            <label for="authName" class="form-label">Nom & Prenom</label>
             <input
               type="text"
               class="form-control"
               id="authName"
-              placeholder="Votre nom"
+              placeholder="John Doe"
               required
             />
           </div>
@@ -361,26 +438,52 @@
               required
             />
           </div>
-          <div class="mb-3">
-            <label for="authPassword" class="form-label">Mot de passe</label>
-            <input
-              type="password"
-              class="form-control"
-              id="authPassword"
-              placeholder="Votre mot de passe"
-              required
-            />
+          <div class="mb-3 d-flex gap-2">
+            <div>
+              <label for="authPassword" class="form-label">Mot de passe</label>
+              <input
+                type="password"
+                class="form-control"
+                id="authPassword"
+                placeholder="Votre mot de passe"
+                required
+              />
+            </div>
+            <div id="Number">
+              <label for="authNumber" class="form-label"
+                >Votre numero de telephone</label
+              >
+              <input
+                type="text"
+                name="number"
+                id="authNumber"
+                placeholder="+23769...."
+                class="form-control"
+                required
+              />
+            </div>
           </div>
-          <div class="mb-3 d-none" id="colorPicker">
-            <label for="userColor" class="form-label"
-              >Choisis une couleur</label
-            >
-            <input
-              type="color"
-              id="userColor"
-              value="#563d7c"
-              class="form-control form-control-color"
-            />
+          <div class="mb-3 d-flex gap-3 d-none" id="colorPicker">
+            <div class="color">
+              <label for="userColor" class="form-label"
+                >Choisis une couleur</label
+              >
+              <input
+                type="color"
+                id="userColor"
+                value="#563d7c"
+                class="form-control form-control-color"
+              />
+            </div>
+            <div class="sexe">
+              <select id="sexe" required class="custom-select form-select">
+                <option value="" disabled selected hidden>
+                  Sexe
+                </option>
+                <option value="Masculin">Masculin</option>
+                <option value="Feminin">Feminin</option>
+              </select>
+            </div>
           </div>
           <button type="submit" class="btn btn-primary w-100" id="authSubmit">
             Connexion

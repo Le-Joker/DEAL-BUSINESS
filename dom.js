@@ -95,52 +95,47 @@ const colorPicker = document.getElementById("colorPicker");
 const switchToSignup = document.getElementById("switchToSignup");
 const authTitle = document.getElementById("authTitle");
 const toggleMode = document.getElementById("toggleAuthMode");
+const alertBox = document.getElementById("authAlert");
 
 let isSignup = false;
+
+// 🔁 Alterner connexion / inscription
+function toggleAuthMode() {
+  isSignup = !isSignup;
+  authTitle.textContent = isSignup ? "Inscription" : "Connexion";
+  authSubmit.textContent = isSignup ? "S'inscrire" : "Connexion";
+  colorPicker.classList.toggle("d-none", !isSignup);
+  toggleMode.innerHTML = isSignup
+    ? `Vous avez déjà un compte ? <a href="#">Se connecter</a>`
+    : `Vous n'avez pas encore de compte ? <a href="#">S'inscrire</a>`;
+  switchToSignup.textContent = isSignup ? "Se connecter" : "S'inscrire";
+  clearAlert();
+}
 
 // 👁️ Ouvrir le formulaire
 openAuth?.addEventListener("click", () => {
   authOverlay.classList.remove("d-none");
 });
 
-// 🔄 Basculer entre inscription et connexion
+// 🔁 Liens de bascule
 switchToSignup.addEventListener("click", (e) => {
   e.preventDefault();
   toggleAuthMode();
 });
-
 toggleMode.addEventListener("click", (e) => {
   e.preventDefault();
-  if (e.target.tagName === "A") {
-    toggleAuthMode();
-  }
+  if (e.target.tagName === "A") toggleAuthMode();
 });
 
-function toggleAuthMode() {
-  isSignup = !isSignup;
-  if (isSignup) {
-    authTitle.textContent = "Inscription";
-    authSubmit.textContent = "S'inscrire";
-    colorPicker.classList.remove("d-none");
-    toggleMode.innerHTML = `Vous avez déjà un compte ? <a href="#">Se connecter</a>`;
-    switchToSignup.textContent = "Se connecter";
-  } else {
-    authTitle.textContent = "Connexion";
-    authSubmit.textContent = "Connexion";
-    colorPicker.classList.add("d-none");
-    toggleMode.innerHTML = `Vous n'avez pas encore de compte ? <a href="#">S'inscrire</a>`;
-    switchToSignup.textContent = "S'inscrire";
-  }
-}
-
-// ❌ Fermer l'overlay si on clique en dehors du formulaire
+// ❌ Fermer formulaire
 authOverlay.addEventListener("click", (e) => {
   if (e.target === authOverlay) {
     authOverlay.classList.add("d-none");
+    clearAlert();
   }
 });
 
-// ✅ Soumission du formulaire
+// ✅ Validation formulaire
 authForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const email = authForm.email.value.trim();
@@ -148,7 +143,7 @@ authForm.addEventListener("submit", (e) => {
   const color = authForm.color?.value || "#9eeaf9";
 
   if (!email || !password) {
-    alert("Veuillez remplir tous les champs.");
+    showAlert("Veuillez remplir tous les champs.");
     return;
   }
 
@@ -156,22 +151,45 @@ authForm.addEventListener("submit", (e) => {
 
   if (isSignup) {
     if (users.find((u) => u.email === email)) {
-      alert("Cet email est déjà utilisé.");
+      showAlert("📧 Cet email est déjà utilisé.");
       return;
     }
+
     users.push({ email, password, color });
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
     localStorage.setItem(SESSION_KEY, email);
     window.location.href = "boutique.html";
   } else {
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
+    const user = users.find((u) => u.email === email);
+
     if (!user) {
-      alert("Identifiants incorrects.");
+      showAlert(
+        "👤 Aucun compte trouvé avec cet email. Veuillez vous inscrire."
+      );
       return;
     }
+
+    if (user.password !== password) {
+      showAlert("❌ Mot de passe incorrect.");
+      return;
+    }
+
     localStorage.setItem(SESSION_KEY, user.email);
     window.location.href = "boutique.html";
   }
 });
+
+// 🔔 Alertes Bootstrap
+function showAlert(message) {
+  if (!alertBox) return;
+  alertBox.innerHTML = `
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+  `;
+}
+
+function clearAlert() {
+  if (alertBox) alertBox.innerHTML = "";
+}

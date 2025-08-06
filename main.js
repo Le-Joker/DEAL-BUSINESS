@@ -1,50 +1,17 @@
+const dashboard = document.getElementById("dashboard");
+const sidebar = document.getElementById("sidebar");
+const toggleTopBtn = document.getElementById("toggleSidebar");
+const toggleBottomBtn = document.getElementById("toggleSidebarBottom");
+
+let expanded = false;
+
 function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("show");
+  expanded = !expanded;
+  sidebar.classList.toggle("expanded", expanded);
+  dashboard.classList.toggle("expanded", expanded);
+  toggleTopBtn.classList.toggle("d-none", expanded);
+  toggleBottomBtn.classList.toggle("d-none", !expanded);
 }
 
-function openUserModal() {
-  const email = localStorage.getItem("deal_current_user");
-  const users = JSON.parse(localStorage.getItem("deal_business_users") || "{}");
-  const user = users[email];
-
-  document.getElementById("modalEmail").textContent = email;
-  document.getElementById("modalColor").textContent =
-    user?.color || "Non défini";
-  new bootstrap.Modal(document.getElementById("userModal")).show();
-}
-
-function logout() {
-  localStorage.removeItem("deal_current_user");
-  window.location.href = "index.html";
-}
-
-function deleteAccount() {
-  const confirmDelete = confirm(
-    "⚠️ Es-tu sûr de vouloir supprimer ton compte ?"
-  );
-  if (!confirmDelete) return;
-
-  const email = localStorage.getItem("deal_current_user");
-  let users = JSON.parse(localStorage.getItem("deal_business_users") || "{}");
-
-  delete users[email];
-  localStorage.setItem("deal_business_users", JSON.stringify(users));
-  localStorage.removeItem("deal_current_user");
-
-  alert("Ton compte a été supprimé.");
-  window.location.href = "index.html";
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const email = localStorage.getItem("deal_current_user");
-  const users = JSON.parse(localStorage.getItem("deal_business_users") || "{}");
-  const user = users[email];
-
-  if (email && user) {
-    document.getElementById("userEmail").textContent = email;
-    document.getElementById("userPhoto").style.background =
-      user.color || "#ccc";
-  } else {
-     // Redirection si pas connecté
-  }
-});
+toggleTopBtn.addEventListener("click", toggleSidebar);
+toggleBottomBtn.addEventListener("click", toggleSidebar);

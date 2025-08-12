@@ -668,7 +668,7 @@
         <button
           class="btn btn-outline-primary me-3 d-lg-none"
           type="button"
-          onclick="toggleSidebar()"
+          onclick="toggleOffcanvas()"
         >
           <i class="bi bi-list"></i>
         </button>
@@ -677,9 +677,9 @@
           Deal Business
         </a>
 
-        <!-- Search Bar -->
+        <!-- Search Bar visible uniquement sur écran large -->
         <div
-          class="search-container mx-auto d-none d-md-block"
+          class="search-container mx-auto d-none d-lg-block"
           style="max-width: 400px"
         >
           <i class="bi bi-search search-icon"></i>
@@ -692,52 +692,84 @@
           />
         </div>
 
-        <div class="d-flex align-items-center">
-          <!-- Auth Button visible uniquement sur mobile -->
-          <button
-            class="btn btn-primary-custom btn-custom me-2 d-lg-none"
-            onclick="openAuthModal()"
-          >
-            <span id="authBtnText">Connexion</span>
-          </button>
+        <!-- Auth Button visible sur écrans larges -->
+        <button
+          class="btn btn-primary-custom btn-custom me-2 d-none d-lg-block"
+          onclick="openAuthModal()"
+          id="authBtn"
+        >
+          <span id="authBtnText">Connexion</span>
+        </button>
 
-          <!-- Cart visible uniquement sur mobile -->
-          <button
-            class="btn btn-primary-custom btn-custom position-relative d-lg-none"
-            onclick="toggleCart()"
+        <!-- Cart visible sur écrans larges -->
+        <button
+          class="btn btn-primary-custom btn-custom position-relative d-none d-lg-block"
+          onclick="toggleCart()"
+        >
+          <i class="bi bi-cart"></i>
+          <span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge"
+            id="cartCount"
+            >0</span
           >
-            <i class="bi bi-cart"></i>
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge"
-              id="cartCount"
-              >0</span
-            >
-          </button>
+        </button>
 
-          <!-- Auth Button visible sur écrans larges -->
+        <div class="d-flex align-items-center d-lg-none">
           <button
-            class="btn btn-primary-custom btn-custom me-2 d-none d-lg-block"
-            onclick="openAuthModal()"
-            id="authBtn"
+            class="btn btn-primary-custom btn-custom"
+            onclick="toggleOffcanvas()"
           >
-            <span id="authBtnText">Connexion</span>
-          </button>
-
-          <!-- Cart visible sur écrans larges -->
-          <button
-            class="btn btn-primary-custom btn-custom position-relative d-none d-lg-block"
-            onclick="toggleCart()"
-          >
-            <i class="bi bi-cart"></i>
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge"
-              id="cartCount"
-              >0</span
-            >
+            <i class="bi bi-person"></i>
           </button>
         </div>
       </div>
     </nav>
+
+    <!-- Offcanvas -->
+    <div
+      class="offcanvas offcanvas-end offcanvas-custom"
+      tabindex="-1"
+      id="offcanvasMenu"
+    >
+      <div class="offcanvas-header border-bottom border-primary">
+        <h5 class="offcanvas-title">Mon espace</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <!-- Search Bar -->
+        <div class="search-container mb-3">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            type="text"
+            class="form-control search-input"
+            id="offcanvasSearchInput"
+            placeholder="Rechercher des produits..."
+            oninput="filterProducts()"
+          />
+        </div>
+
+        <div class="d-flex flex-column">
+          <!-- Auth Button -->
+          <button
+            class="btn btn-primary-custom btn-custom mb-3"
+            onclick="openAuthModal()"
+          >
+            <span id="authBtnText">Connexion</span>
+          </button>
+          <!-- Cart Button -->
+          <button
+            class="btn btn-primary-custom btn-custom"
+            onclick="toggleCart()"
+          >
+            <i class="bi bi-cart"></i> Panier <span id="cartCount">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Sidebar -->
     <div class="sidebar-custom" id="sidebar">
@@ -2055,6 +2087,13 @@
             updateCartUI();
           }
         }
+      }
+
+      function toggleOffcanvas() {
+        const offcanvas = new bootstrap.Offcanvas(
+          document.getElementById("offcanvasMenu")
+        );
+        offcanvas.show();
       }
 
       function updateCartUI() {
